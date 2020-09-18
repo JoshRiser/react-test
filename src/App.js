@@ -1,5 +1,9 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
+import request from 'request';
+
+import { ThemeProvider, makeStyles } from '@material-ui/core/styles';
+import { drawerTheme } from './theme';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -17,15 +21,55 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Divider from '@material-ui/core/Divider';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import DevicesIcon from '@material-ui/icons/Devices';
+import DraftsOutlinedIcon from '@material-ui/icons/DraftsOutlined';
+import PlaylistAddCheckOutlinedIcon from '@material-ui/icons/PlaylistAddCheckOutlined';
+import PowerSettingsNewOutlinedIcon from '@material-ui/icons/PowerSettingsNewOutlined';
 
 const useStyles = makeStyles((theme) => ({
 	options: {
 		marginLeft: 'auto'
 	},
-	list: {
+	paper: {
+		background: 'white' 
+	},
+	drawerHeader: {
 		width: 320,
-		height: 100, 
-		backgroundColor: 'white'
+		padding: 20, 
+		paddingTop: 50,
+		backgroundColor: '#122e42'
+	},
+	drawerAvatar: {
+		width: 64, 
+	    height: 64,
+	    marginBottom: 15,
+	    borderRadius: '50%',
+	    border: '2px solid white',
+	},
+	drawerName: {
+		fontSize: 18,
+		fontWeight: 600,
+		color: 'white',
+	},
+	drawerCity: {
+		fontSize: 18,
+		color: 'white',
+	},
+	listNumber: {
+		width: 24,
+		height: 24,
+		textAlign: 'center',  
+		backgroundColor: '#00d0ff',
+		color: 'white',
+		borderRadius: '50%', 
 	},
 	body: {
 		position: 'relative',
@@ -74,42 +118,93 @@ export default function App() {
 	const classes = useStyles();
 	const preventDefault = (event) => event.preventDefault();
 
-	const [state, setState] = React.useState({
-		drawerOpen: false,
-		user_name: '',
+	const [drawerOpen, setDrawerOpen] = React.useState(false);
+	const [formData, setFormData] = React.useState({
+		user_name: 'Josh Riser',
 		user_phone: '',
 		user_email: '',
 		pairing: false, 
 	});
 
-	const toggleDrawer = (open) => (event) => {
-		if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-			return;
-		}
-
-		setState({ ...state, drawerOpen: open });
-	};
-
-	const updateInput = function(el) {
-		setState({ ...state, [el.target.name]: el.target.value });
+	const updateInput = function(e) {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
+	}
+	const updateCheck = function(e) {
+		setFormData({ ...formData, [e.target.name]: e.target.checked });
 	}
 
-	const updateCheck = function(el) {
-		setState({ ...state, [el.target.name]: el.target.checked });
-	}
+	const submitForm = function(e) {
+		e.preventDefault()
 
-	const submitForm = function() {
-		console.log(state);
+		request.post('http://projects.codeandtrust.com/api/user/create', {form: formData}, function(err,red,body) {
+			console.log(body);
+		});
 	}
 
 	return (
 		<React.Fragment>
-			<Drawer anchor="left" open={state.drawerOpen} onClose={toggleDrawer(false)}>
-				<Box className={classes.list}>
-				</Box>
-			</Drawer>
+			<ThemeProvider theme={drawerTheme}>
+				<Drawer classes={{ paper: classes.paper }} anchor="left" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+					<Box className={classes.drawerHeader}>
+						<CardMedia
+							className={classes.drawerAvatar}
+							image="https://api.adorable.io/avatars/285/codeandtrust.png"
+						/>
+						<Typography className={classes.drawerName}>{formData.user_name}</Typography>
+						<Grid container spacing={0} alignItems="center">
+							<Grid item xs={6}>
+								<Typography className={classes.drawerCity} component="span">Charleston, SC</Typography>
+							</Grid>
+							<Grid item xs={6} style={{ textAlign: 'right' }}>
+								<IconButton edge="end" aria-label="switch_user" style={{ color: 'white' }}>
+									<ArrowDropDownIcon />
+								</IconButton>
+							</Grid>
+						</Grid>
+					</Box>
+					<List>
+						<ListItem button>
+							<ListItemIcon>
+								<AccountCircleIcon />
+							</ListItemIcon>
+							<ListItemText primary="Account Settings" />
+						</ListItem>
+						<ListItem button>
+							<ListItemIcon>
+								<DevicesIcon />
+							</ListItemIcon>
+							<ListItemText primary="Paired Devices" />
+						</ListItem>
+						<ListItem button>
+							<ListItemIcon>
+								<DraftsOutlinedIcon />
+							</ListItemIcon>
+							<ListItemText primary="Invites" />
+							<ListItemSecondaryAction>
+								<Typography className={classes.listNumber}>
+									2
+								</Typography>
+							</ListItemSecondaryAction>
+						</ListItem>
+						<Divider />
+						<ListItem button>
+							<ListItemIcon>
+								<PlaylistAddCheckOutlinedIcon />
+							</ListItemIcon>
+							<ListItemText primary="Triggers" />
+						</ListItem>
+						<Divider />
+						<ListItem button>
+							<ListItemIcon>
+								<PowerSettingsNewOutlinedIcon />
+							</ListItemIcon>
+							<ListItemText primary="Logout" />
+						</ListItem>
+					</List>
+				</Drawer>
+			</ThemeProvider>
 			<Toolbar>
-				<IconButton edge="start" aria-label="menu" onClick={toggleDrawer(true)}>
+				<IconButton edge="start" aria-label="menu" onClick={() => setDrawerOpen(true)}>
 					<MenuIcon />
 				</IconButton>
 				<section className={classes.options}>
@@ -128,13 +223,33 @@ export default function App() {
 					className={classes.avatar}
 					image="https://api.adorable.io/avatars/285/codeandtrust.png"
 				/>
-				<Typography className={classes.name} variant="h3" component="h3">
-					Josh Riser
-				</Typography>
-				<form noValidate autoComplete="off">
-					<TextField name="user_name" label="Your Name" color="secondary" className={classes.input} onChange={updateInput} />
-					<TextField name="user_phone" label="Phone Number" color="secondary" className={classes.input} onChange={updateInput} />
-					<TextField name="user_email" label="Email Address" color="secondary" className={classes.input} onChange={updateInput} />
+				<Typography className={classes.name} variant="h3" component="h3">{formData.user_name}</Typography>
+				<form id="user-form" autoComplete="off" onSubmit={submitForm}>
+					<TextField
+						name="user_name"
+						label="Your Name"
+						value={formData.user_name}
+						color="secondary"
+						className={classes.input}
+						onChange={updateInput}
+						required
+					/>
+					<TextField
+						name="user_phone"
+						label="Phone Number"
+						color="secondary"
+						className={classes.input}
+						onChange={updateInput}
+						required
+					/>
+					<TextField
+						name="user_email"
+						label="Email Address"
+						color="secondary"
+						className={classes.input}
+						onChange={updateInput}
+						required
+					/>
 					<TextField
 						id="password"
 						type="password"
@@ -182,7 +297,7 @@ export default function App() {
 					<Button color="primary">
 						Cancel
 					</Button>
-					<Button variant="contained" color="primary" className={classes.saveButton} onClick={submitForm}>
+					<Button form="user-form" type="submit" variant="contained" color="primary" className={classes.saveButton}>
 						Save
 					</Button>
 				</Toolbar>

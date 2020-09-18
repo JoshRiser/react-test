@@ -20,4 +20,21 @@ const theme = createMuiTheme({
 	},
 });
 
-export default theme;
+const drawerTheme = createMuiTheme({
+	palette: {
+		primary: {
+			main: '#00d0ff',
+		},
+		secondary: {
+			main: '#ffffff',
+		},
+		error: {
+			main: red.A400,
+		},
+		background: {
+			default: '#13314d',
+		},
+	},
+});
+
+export { theme, drawerTheme };
