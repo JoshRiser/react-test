@@ -12,10 +12,13 @@
     "@material-ui/core": "latest",
     "@material-ui/icons": "^4.9.1",
     "clsx": "latest",
+    "formik": "^2.1.5",
     "react": "latest",
     "react-dom": "latest",
+    "react-input-mask": "^2.0.4",
     "react-scripts": "latest",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "yup": "^0.29.3"
   },
   "browserslist": {
     "production": [

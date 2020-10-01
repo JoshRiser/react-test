@@ -48,7 +48,7 @@ export default function App() {
 					className={classes.avatar}
 					image="https://api.adorable.io/avatars/285/codeandtrust.png"
 				/>
-				<Typography className={classes.name} variant="h3" component="h3">{formData.user_name}</Typography>
+				<Typography className={classes.name} component="h3">{formData.user_name}</Typography>
 				<AppForm
 					formData={formData}
 					setFormData={setFormData}
